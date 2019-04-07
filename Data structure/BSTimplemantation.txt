@@ -1,0 +1,213 @@
+#include<iostream>
+#include<algorithm>
+#include<queue>
+using namespace std;
+struct BstNode {
+	int data;
+	BstNode* left;
+	BstNode* right;
+};
+int  Maax(int  x, int y) {
+	return (x < y) ? y : x;
+}
+BstNode* GetNode(int x) {
+	BstNode* newNode = new BstNode();
+	(*newNode).data = x;
+	(*newNode).left = NULL;
+	(*newNode).right = NULL;
+	return newNode;
+}
+
+BstNode* insert(BstNode* root, int x) {
+	if (root == NULL) {
+		root = GetNode(x);
+		return root;
+	}
+	else if (x <= (*root).data) {
+		(*root).left = insert((*root).left, x);
+	}
+	else {
+		(*root).right = insert((*root).right, x);
+	}
+	return root;
+}
+bool IsLesser(BstNode* root, int data) {
+	if (root == NULL) return true;
+	if ((*root).data <= data && IsLesser((*root).left, data) && IsLesser((*root).right, data))
+		return true;
+	else
+		return false;
+}
+
+bool IsGreater(BstNode* root, int data) {
+	if (root == NULL) return true;
+	if ((*root).data >= data &&  IsGreater((*root).left, data) && IsGreater((*root).right, data))
+		return true;
+	else
+		return false;
+}
+
+bool CheckBainary(BstNode* root) {
+	if (root == NULL) return true;
+	if (IsLesser((*root).left, (*root).data) && IsGreater((*root).right, (*root).data)
+		&& CheckBainary((*root).left) && CheckBainary((*root).right))  return true;
+	else
+		return false;
+
+}
+
+bool search(BstNode* root, int iteam) {
+	if (root == NULL) return false;
+	else if ((*root).data == iteam) return true;
+	else if (iteam <= (*root).data) return search((*root).left, iteam);
+	else return search((*root).right,iteam);
+	return root;
+}
+//Recursive manner
+int FindMax(BstNode* root) {
+	if (root == NULL) {
+		cout << "Error: Tree is empty\n";
+		return -1;
+	}
+	else if ((*root).right == NULL) {
+		return (*root).data;
+	}
+	return FindMax((*root).right);
+}
+//Iterative manner
+int FindmIn(BstNode* root) {
+	if (root == NULL) {
+		cout << "Error: Tree is empty\n";
+		return -1;
+	}
+	while ((*root).left != NULL) {
+		root = (*root).left;
+	}
+	return (*root).data;	
+}
+BstNode* FindMin(BstNode* root) {
+
+	while ((*root).left != NULL) {
+		root = (*root).left;
+	}
+	return root;
+}
+
+int FindHight(BstNode* root) {
+	if (root == NULL) {
+		return -1;
+	}
+	return Maax(FindHight((*root).left), FindHight((*root).right)) + 1;
+}
+
+BstNode* DeletNode(BstNode* root, int x) {
+	if (root == NULL) return root;
+	if (x < (*root).data) (*root).left = DeletNode((*root).left, x);
+	else if (x>(*root).data) (*root).right = DeletNode((*root).right,x);
+	else {
+		//case1:NO child
+		if ((*root).left == NULL && (*root).right == NULL) {
+			delete root;
+			root = NULL;
+		}
+		//case 2: 0ne child;
+		else if ((*root).left == NULL) {
+			BstNode* temp = root;
+			root = (*root).right;
+			delete temp;
+		}
+		//case 2: 0ne child;
+		else if ((*root).right == NULL) {
+			BstNode* temp = root;
+			root = (*root).left;
+			delete temp;
+		}
+		//case 3: Two child
+		else {
+			BstNode* temp = FindMin((*root).right);
+			(*root).data = (*temp).data;
+			(*root).right = DeletNode((*root).right, (*temp).data);
+		}
+	}
+	return root;
+}
+
+
+//Level Order Traversel
+void LevelOrder(BstNode* root) {
+	cout << "Queue is : ";
+	if (root == NULL) return;
+	queue<BstNode*> Q;
+	Q.push(root);
+	while (!Q.empty()) {
+		BstNode* current = Q.front();
+		cout << (*current).data << " ";
+		if ((*current).left != NULL) Q.push((*current).left);
+		if ((*current).right != NULL) Q.push((*current).right);
+		Q.pop();
+	}
+
+	cout << endl;
+}
+
+void PreOder(BstNode* root) {
+	//cout << "Queue is : ";
+
+	if (root == NULL) return;
+	cout << (*root).data << " ";
+	PreOder((*root).left);
+	PreOder((*root).right);
+}
+
+void Inorder(BstNode* root) {
+	if (root == NULL) return;
+	Inorder((*root).left);
+	cout << (*root).data << " ";
+	Inorder((*root).right);
+}
+void PostOrder(BstNode* root ) {
+	if (root == NULL) return;
+	PostOrder((*root).left);
+	PostOrder((*root).right);
+	cout << (*root).data << " ";
+}
+int main() {
+	BstNode* root = NULL;
+	root = insert(root, 15);
+	root = insert(root, 20);
+	root = insert(root, 25);
+	root = insert(root, 5);
+	root = insert(root, 11);
+	root = insert(root, 13);
+
+	if (CheckBainary(root))
+		cout << "This is BST " << endl;
+	else
+		cout << "This is not BST " << endl;
+
+	LevelOrder(root);
+	cout << "Queue is : ";
+	PreOder(root);
+	cout << endl;
+
+	root = DeletNode(root, 25);
+
+	cout << "After Delation Queue is : ";
+	Inorder(root);
+	cout << endl;
+	cout << "Queue is : ";
+	PostOrder(root);
+	cout << endl;
+
+
+	cout << "Enter iteam:\n";
+	int a;
+	cin >> a;
+
+	if (search(root, a) == true)cout << "Iteam is Found\n";
+	else cout << "Iteam is Not Found\n";
+	cout << "Maximum is = " << FindMax(root) << endl;
+	cout << "Minimum is = " << FindmIn(root) << endl;
+	cout << "Height is = " << FindHight(root) << endl;
+}
+

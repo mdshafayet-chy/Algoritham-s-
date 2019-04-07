@@ -1,0 +1,38 @@
+/*#include<iostream>
+using namespace std;
+
+int A[10];
+
+void makeset(int x) {
+	A[x] = x;
+}
+
+int find(int x) {
+	if (A[x] == x) return x;
+	A[x] = find(A[x]);
+	return A[x];
+}
+
+void unionset (int x,int y) {
+	int u = find(x);
+	int v = find(y);
+	if (u == v)
+		cout << x <<" They are already friend "<< y << endl;
+	else
+		A[u] = v;
+}
+
+int main() {
+	
+	for (int i = 1;i < 6;i++) {
+		makeset(i);
+	}
+	unionset (1, 2);
+	unionset(4, 3);
+	unionset(3, 2);
+	unionset(4, 3);
+	if (A[1] == A[4])
+		cout << "u" << endl;
+
+}
+*/

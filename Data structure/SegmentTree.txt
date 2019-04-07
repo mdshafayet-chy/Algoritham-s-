@@ -1,0 +1,436 @@
+/*#define _CRT_SECURE_NO_WARNINGS
+#include <cstdio>
+#include <cmath>
+#include <cstring>
+#include <cstdlib>
+#include <iostream>
+#include <cmath>
+#include <algorithm>
+#include <list>
+#include <stack>
+#include <utility>
+#include <set>
+#include <ctime>
+#include <string>
+#include <map>
+#include <vector>
+#include <queue>
+#include <cctype>
+
+#define SIZE 100005
+
+
+#define INF 2147483646
+
+#define MOD 1000000007
+
+using namespace std;
+int tree[4 * SIZE];
+
+void update(int node, int b, int e, int i, int newvalue)
+{
+	if (i > e || i < b)
+		return;
+	if (b == e) {
+		tree[node] = newvalue;
+		return;
+	}
+	int Left = node * 2;
+	int Right = node * 2 + 1;
+	int mid = (b + e) / 2;
+	update(Left, b, mid, i, newvalue);
+	update(Right, mid + 1, e, i, newvalue);
+	tree[node] = min(tree[Left], tree[Right]);
+}
+
+int query(int node, int l, int e, int i, int j) {
+	int c = 0;
+	if (i > e || j < l)
+		return INF;
+	if (l >= i && e <= j)
+		return tree[l];
+	int left = 2 * node;
+	int right = (2 * node) + 1;
+	int mid = (l + e) / 2;
+	int p1 = query(left, l, mid, i, j);
+	int p2 = query(right, mid + 1, e, i, j);
+
+
+}
+
+
+int main() {
+
+	freopen("input.txt", "r", stdin);
+
+	int t;
+	scanf("%d", &t);
+	//printf("\n");
+	for (int i = 1;i <= t;i++) {
+		int n, q, value;
+		//printf("\n");
+		scanf("%d %d", &n, &q);
+
+		for (int i = 1;i <= n;i++) {
+			scanf("%d", &tree[i]);
+			//update(1, 1, n, i, );
+		}
+		printf("Case %d:\n", i);
+		for (int i = 1;i <= q;i++) {
+			int k, j;
+			scanf("%d %d", &k, &j);
+
+			int r = query(1, 1, n, k, j);
+			printf("%d\n", r);
+		}
+
+	}
+}#define _CRT_SECURE_NO_WARNINGS
+#include <cstdio>
+#include <cmath>
+#include <cstring>
+#include <cstdlib>
+#include <iostream>
+#include <cmath>
+#include <algorithm>
+#include <list>
+#include <stack>
+#include <utility>
+#include <set>
+#include <ctime>
+#include <string>
+#include <map>
+#include <vector>
+#include <queue>
+#include <cctype>
+
+#define SIZE 100005
+
+
+#define INF 2147483646
+
+#define MOD 1000000007
+
+using namespace std;
+int tree[4 * SIZE];
+
+void update(int node, int b, int e, int i, int newvalue)
+{
+	if (i > e || i < b)
+		return;
+	if (b == e) {
+		tree[node] = newvalue;
+		return;
+	}
+	int Left = node * 2;
+	int Right = node * 2 + 1;
+	int mid = (b + e) / 2;
+	update(Left, b, mid, i, newvalue);
+	update(Right, mid + 1, e, i, newvalue);
+	tree[node] = min(tree[Left], tree[Right]);
+}
+
+int query(int node, int l, int e, int i, int j) {
+	int c = 0;
+	if (i > e || j < l)
+		return INF;
+	if (l >= i && e <= j)
+		return tree[l];
+	int left = 2 * node;
+	int right = (2 * node) + 1;
+	int mid = (l + e) / 2;
+	int p1 = query(left, l, mid, i, j);
+	int p2 = query(right, mid + 1, e, i, j);
+
+
+}
+
+
+int main() {
+
+	freopen("input.txt", "r", stdin);
+
+	int t;
+	scanf("%d", &t);
+	//printf("\n");
+	for (int i = 1;i <= t;i++) {
+		int n, q, value;
+		//printf("\n");
+		scanf("%d %d", &n, &q);
+
+		for (int i = 1;i <= n;i++) {
+			scanf("%d", &tree[i]);
+			//update(1, 1, n, i, );
+		}
+		printf("Case %d:\n", i);
+		for (int i = 1;i <= q;i++) {
+			int k, j;
+			scanf("%d %d", &k, &j);
+
+			int r = query(1, 1, n, k, j);
+			printf("%d\n", r);
+		}
+
+	}
+}#define _CRT_SECURE_NO_WARNINGS
+#include <cstdio>
+#include <cmath>
+#include <cstring>
+#include <cstdlib>
+#include <iostream>
+#include <cmath>
+#include <algorithm>
+#include <list>
+#include <stack>
+#include <utility>
+#include <set>
+#include <ctime>
+#include <string>
+#include <map>
+#include <vector>
+#include <queue>
+#include <cctype>
+
+#define SIZE 100005
+
+
+#define INF 2147483646
+
+#define MOD 1000000007
+
+using namespace std;
+int tree[4 * SIZE];
+
+void update(int node, int b, int e, int i, int newvalue)
+{
+	if (i > e || i < b)
+		return;
+	if (b == e) {
+		tree[node] = newvalue;
+		return;
+	}
+	int Left = node * 2;
+	int Right = node * 2 + 1;
+	int mid = (b + e) / 2;
+	update(Left, b, mid, i, newvalue);
+	update(Right, mid + 1, e, i, newvalue);
+	tree[node] = min(tree[Left], tree[Right]);
+}
+
+int query(int node, int l, int e, int i, int j) {
+	int c = 0;
+	if (i > e || j < l)
+		return INF;
+	if (l >= i && e <= j)
+		return tree[l];
+	int left = 2 * node;
+	int right = (2 * node) + 1;
+	int mid = (l + e) / 2;
+	int p1 = query(left, l, mid, i, j);
+	int p2 = query(right, mid + 1, e, i, j);
+
+
+}
+
+
+int main() {
+
+	freopen("input.txt", "r", stdin);
+
+	int t;
+	scanf("%d", &t);
+	//printf("\n");
+	for (int i = 1;i <= t;i++) {
+		int n, q, value;
+		//printf("\n");
+		scanf("%d %d", &n, &q);
+
+		for (int i = 1;i <= n;i++) {
+			scanf("%d", &tree[i]);
+			//update(1, 1, n, i, );
+		}
+		printf("Case %d:\n", i);
+		for (int i = 1;i <= q;i++) {
+			int k, j;
+			scanf("%d %d", &k, &j);
+
+			int r = query(1, 1, n, k, j);
+			printf("%d\n", r);
+		}
+
+	}
+}#define _CRT_SECURE_NO_WARNINGS
+#include <cstdio>
+#include <cmath>
+#include <cstring>
+#include <cstdlib>
+#include <iostream>
+#include <cmath>
+#include <algorithm>
+#include <list>
+#include <stack>
+#include <utility>
+#include <set>
+#include <ctime>
+#include <string>
+#include <map>
+#include <vector>
+#include <queue>
+#include <cctype>
+
+#define SIZE 100005
+
+
+#define INF 2147483646
+
+#define MOD 1000000007
+
+using namespace std;
+int tree[4 * SIZE];
+
+void update(int node, int b, int e, int i, int newvalue)
+{
+	if (i > e || i < b)
+		return;
+	if (b == e) {
+		tree[node] = newvalue;
+		return;
+	}
+	int Left = node * 2;
+	int Right = node * 2 + 1;
+	int mid = (b + e) / 2;
+	update(Left, b, mid, i, newvalue);
+	update(Right, mid + 1, e, i, newvalue);
+	tree[node] = min(tree[Left], tree[Right]);
+}
+
+int query(int node, int l, int e, int i, int j) {
+	int c = 0;
+	if (i > e || j < l)
+		return INF;
+	if (l >= i && e <= j)
+		return tree[l];
+	int left = 2 * node;
+	int right = (2 * node) + 1;
+	int mid = (l + e) / 2;
+	int p1 = query(left, l, mid, i, j);
+	int p2 = query(right, mid + 1, e, i, j);
+
+
+}
+
+
+int main() {
+
+	freopen("input.txt", "r", stdin);
+
+	int t;
+	scanf("%d", &t);
+	//printf("\n");
+	for (int i = 1;i <= t;i++) {
+		int n, q, value;
+		//printf("\n");
+		scanf("%d %d", &n, &q);
+
+		for (int i = 1;i <= n;i++) {
+			scanf("%d", &tree[i]);
+			//update(1, 1, n, i, );
+		}
+		printf("Case %d:\n", i);
+		for (int i = 1;i <= q;i++) {
+			int k, j;
+			scanf("%d %d", &k, &j);
+
+			int r = query(1, 1, n, k, j);
+			printf("%d\n", r);
+		}
+
+	}
+}#define _CRT_SECURE_NO_WARNINGS
+#include <cstdio>
+#include <cmath>
+#include <cstring>
+#include <cstdlib>
+#include <iostream>
+#include <cmath>
+#include <algorithm>
+#include <list>
+#include <stack>
+#include <utility>
+#include <set>
+#include <ctime>
+#include <string>
+#include <map>
+#include <vector>
+#include <queue>
+#include <cctype>
+
+#define SIZE 100005
+
+
+#define INF 2147483646
+
+#define MOD 1000000007
+
+using namespace std;
+int tree[4 * SIZE];
+
+void update(int node, int b, int e, int i, int newvalue)
+{
+	if (i > e || i < b)
+		return;
+	if (b == e) {
+		tree[node] = newvalue;
+		return;
+	}
+	int Left = node * 2;
+	int Right = node * 2 + 1;
+	int mid = (b + e) / 2;
+	update(Left, b, mid, i, newvalue);
+	update(Right, mid + 1, e, i, newvalue);
+	tree[node] = min(tree[Left], tree[Right]);
+}
+
+int query(int node, int l, int e, int i, int j) {
+	int c = 0;
+	if (i > e || j < l)
+		return INF;
+	if (l >= i && e <= j)
+		return tree[l];
+	int left = 2 * node;
+	int right = (2 * node) + 1;
+	int mid = (l + e) / 2;
+	int p1 = query(left, l, mid, i, j);
+	int p2 = query(right, mid + 1, e, i, j);
+
+
+}
+
+
+int main() {
+
+	freopen("input.txt", "r", stdin);
+
+	int t;
+	scanf("%d", &t);
+	//printf("\n");
+	for (int i = 1;i <= t;i++) {
+		int n, q, value;
+		//printf("\n");
+		scanf("%d %d", &n, &q);
+
+		for (int i = 1;i <= n;i++) {
+			scanf("%d", &tree[i]);
+			//update(1, 1, n, i, );
+		}
+		printf("Case %d:\n", i);
+		for (int i = 1;i <= q;i++) {
+			int k, j;
+			scanf("%d %d", &k, &j);
+
+			int r = query(1, 1, n, k, j);
+			printf("%d\n", r);
+		}
+
+	}
+}*/

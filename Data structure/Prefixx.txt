@@ -1,0 +1,63 @@
+/*#include<iostream>
+#include<string>
+#include<stack>
+using namespace std;
+int evaluatePrefix(string exp);
+int operation(char exp, int op1, int op2);
+bool IsOperation(char c);
+bool NumaricDigt(char c);
+int main() {
+	string s;
+	cout << "Enter the prifix  expression\n";
+	getline(cin, s);
+	int r = evaluatePrefix(s);
+	cout << r << endl;
+
+}
+int evaluatePrefix(string exp) {
+	stack<int> s;
+	for (int i = exp.length();i >= 0;i--) {
+		if (exp[i] == ' ' || exp[i] == ',') continue;
+
+		else if (IsOperation(exp[i])) {
+			int op1 = s.top(); s.pop();
+			int op2 = s.top(); s.pop();
+			int res = operation(exp[i], op1, op2);
+			s.push(res);
+		}
+
+		else if (NumaricDigt(exp[i])) {
+			int oparend = 0;
+			oparend = (exp[i] - '0');
+			s.push(oparend);
+		}
+	}
+	return s.top();
+}
+
+bool IsOperation(char c) {
+	if (c == '+' || c == '-' || c == '*' || c == '/')
+		return true;
+	else
+		return false;
+}
+
+bool NumaricDigt(char c) {
+	if (c >= '0'&&c <= '9')
+		return true;
+	else
+		return false;
+}
+int operation(char exp, int op1, int op2) {
+	if (exp == '+')
+		return op1 + op2;
+	else if (exp == '-')
+		return op1 - op2;
+	else if (exp == '*')
+		return op1*op2;
+	else if (exp == '/')
+		return op1 / op2;
+	else
+		cout << "Unexpected Error \n";
+	return -1;
+}*/

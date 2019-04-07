@@ -1,0 +1,85 @@
+/*#include<iostream>
+#include<cstdio>
+#include<cmath>
+#include<algorithm>
+using namespace std;
+
+void MaxHeap(int a[], int i, int n) {
+
+	int larg=0;
+	int left = 2 * i;
+	int right = (2 * i) + 1;
+	if (left <= n && a[left] > a[i])
+		larg = left;
+	else
+		larg = i;
+	if (right <= n && a[right] > a[larg])
+		larg = right;
+	if (larg != i) {
+		swap(a[i], a[larg]);
+		MaxHeap(a, larg, n);
+	}
+}
+
+void BuildHeap(int A[], int N) {
+	for (int i = N / 2;i >= 1;i--) {
+		MaxHeap(A, i, N);
+	}
+}
+
+int PQmax(int A[]) {
+	return A[1];
+}
+
+int PQDelet(int A[], int n) {
+	if (n == 0) {
+		cout << "Can’t remove element as queue is empty\n";
+		return -1;
+	}
+	int max = A[1];
+	A[1] = A[n];
+	n = n - 1;
+	BuildHeap(A, n);
+	return max;
+}
+
+void IncreaseValue(int a[], int i, int value) {
+	if (value < a[i]) {
+		cout << "New value is less than current value, can’t be inserted" << endl;
+		return;
+	}
+	a[i] = value;
+	while (i > 1 && a[i / 2] < a[i]) {
+		swap(a[i / 2], a[i]);
+		i /= 2;
+	}
+
+}
+
+void InsertValue(int a[], int n,int value) {
+
+	n = n + 1;
+	a[n] = - 1;
+	IncreaseValue(a, n, value);
+}
+
+int main() {
+	int a[] = { 0,4,8,7,3,1 };
+	int n = sizeof(a) / sizeof(*a);
+	BuildHeap(a, n-1);
+	cout << "MaxHeap is : ";
+	for (int i = 1;i < n;i++) {
+		cout << a[i] << " ";
+	}
+	cout << endl;
+	//PQDelet(a, n-1);
+	//cout << PQDelet(a, n) << endl;
+	InsertValue(a,n-1, 6);
+	//IncreaseValue(a, 2, 6);
+	cout << "Max PQ is : ";
+	for (int i = 1;i <= n;i++) {
+		cout << a[i] << " ";
+	}
+	cout << endl;
+}
+*/

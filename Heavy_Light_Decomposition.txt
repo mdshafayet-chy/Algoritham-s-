@@ -1,0 +1,286 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+#define INF 0x3f3f3f3f
+#define MAX  10005
+
+int chainHead[MAX],  chainInd[MAX],  posInBase[MAX], baseArray[MAX];
+//int chainSize[MAX], chainPos[MAX];
+int subtreeSize[MAX];
+int level[MAX],par[MAX],table[MAX][22];
+vector<int> adj[MAX];
+vector<int> adjCost[MAX];
+vector<int> indexOfEdge[MAX];
+int otherEnd[MAX];
+int tree[4*MAX];
+int chainNo, ptr;
+int n;
+
+void dfs(int u, int from)
+{
+    subtreeSize[u] = 1;
+    par[u] = from;
+    int len = adj[u].size();
+    for(int i = 0; i < len; i++) {
+        int v = adj[u][i];
+        if(v != from) {
+            level[v] = level[u]+1;
+            otherEnd[indexOfEdge[u][i]] = v;
+            dfs(v,u);
+            subtreeSize[u] += subtreeSize[v];
+        }
+    }
+}
+
+void lca_init()
+{
+    memset(table,-1,sizeof(table));
+    for(int i = 1; i <= n; i++)
+        table[i][0] = par[i];
+    for(int j = 1; (1<<j) < n; j++) {
+        for(int i = 1; i <= n; i++) {
+            if(table[i][j-1] != -1) {
+                table[i][j] = table[table[i][j-1]][j-1];
+            }
+        }
+    }
+}
+
+int lca_query(int p, int q)
+{
+    int temp;
+    if(level[p] < level[q]) {
+        temp = p;
+        p = q;
+        q = temp;
+    }
+    int log = 1;
+    while(1) {
+        temp = log+1;
+        if((1<<temp) > level[p])
+            break;
+        log++;
+    }
+    for(int i = log; i >= 0; i--) {
+        if(level[p]-(1<<i) >= level[q])
+            p = table[p][i];
+    }
+    if(p == q)
+        return p;
+    for(int i = log; i >= 0; i--) {
+        if(table[p][i] != -1 && table[p][i] != table[q][i]) {
+            p = table[p][i];
+            q = table[q][i];
+        }
+    }
+    return par[p];
+}
+
+/*
+ * Actual HL-Decomposition part
+ * Initially all entries of chainHead[] are set to -1.
+ * So when ever a new chain is started, chain head is correctly assigned.
+ * As we add a new node to chain, we will note its position in the baseArray.
+ * In the first for loop we find the child node which has maximum sub-tree size.
+ * The following if condition is failed for leaf nodes.
+ * When the if condition passes, we expand the chain to special child.
+ * In the second for loop we recursively call the function on all normal nodes.
+ * chainNo++ ensures that we are creating a new chain for each normal child.
+ */
+
+void HLD(int cur, int from, int cost)
+{
+    if(chainHead[chainNo] == -1)
+        chainHead[chainNo] = cur;
+    chainInd[cur] = chainNo;
+    posInBase[cur] = ptr;
+    baseArray[ptr] = cost;
+    ptr++;
+    //chainPos[cur] = chainSize[chainNo];
+    //chainSize[chainNo]++;
+    int bigSoFar = -1, c;
+    int len = adj[cur].size();
+    for(int i = 0; i < len; i++) {
+        int v = adj[cur][i];
+        if(v != from) {
+            if(bigSoFar == -1 || subtreeSize[v] > subtreeSize[bigSoFar]) {
+                bigSoFar = v;
+                c = adjCost[cur][i];
+            }
+        }
+    }
+
+    if(bigSoFar != -1)
+        HLD(bigSoFar,cur,c);
+
+    for(int i = 0; i < len; i++) {
+        int v = adj[cur][i];
+        if(v != from && bigSoFar != v) {
+            chainNo++;
+            HLD(v,cur,adjCost[cur][i]);
+        }
+    }
+}
+
+/*
+ init_tree:
+ * Used to construct the segment tree. It uses the baseArray for construction
+ */
+
+void init_tree(int node,int s,int e)
+{
+    if(s == e) {
+        tree[node] = baseArray[s];
+        return;
+    }
+    int left = node<<1;
+    int right = left+1;
+    int mid = (s+e)>>1;
+    init_tree(left,s,mid);
+    init_tree(right,mid+1,e);
+    tree[node] = max(tree[left],tree[right]);
+}
+
+/*
+ * update_tree:
+ * Point update. Update a single element of the segment tree.
+ */
+
+void update_tree(int node,int s, int e, int i,int newValue)
+{
+    if(e < i || s > i)
+        return;
+    if(s == e && s == i) {
+        tree[node] = newValue;
+        return;
+    }
+    int left = node<<1;
+    int right = left+1;
+    int mid = (s+e)>>1;
+    update_tree(left,s,mid,i,newValue);
+    update_tree(right,mid+1,e,i,newValue);
+    tree[node] = max(tree[left],tree[right]);
+}
+
+/*
+ * query_tree:
+ * Given i and j, it will return the maximum value in the range [i,j])
+ */
+
+int query_tree(int node,int s, int e, int i, int j)
+{
+    if(e < i || s > j)
+        return 0;
+    if(s >= i && e <= j)
+        return tree[node];
+    int left = node<<1;
+    int right = left+1;
+    int mid = (s+e)>>1;
+    int p = query_tree(left,s,mid,i,j);
+    int q = query_tree(right,mid+1,e,i,j);
+    return max(p,q);
+}
+
+/*
+ * query_up:
+ * It takes two nodes u and v, condition is that v is an ancestor of u
+ * We query the chain in which u is present till chain head, then move to next chain up
+ * We do that way till u and v are in the same chain, we query for that part of chain and break
+ */
+
+int query_up(int u,int v)
+{
+    if(u == v)
+        return 0;
+    int uchain, vchain = chainInd[v], ans = -1;
+    while(1) {
+        uchain = chainInd[u];
+        if(uchain == vchain) {
+            if(u == v)
+                break;
+            int temp = query_tree(1,0,ptr,posInBase[v]+1,posInBase[u]);
+            //cout << posInBase[v]+1 << " --> " << posInBase[u] << " = " << temp << endl;
+            ans = max(temp,ans);
+            break;
+        }
+        int temp = query_tree(1,0,ptr,posInBase[chainHead[chainInd[u]]],posInBase[u]);
+        //cout << posInBase[chainHead[chainInd[u]]] << " --> " << posInBase[u] << " = " << temp << endl;
+        ans = max(temp,ans);
+        u = chainHead[uchain];
+        u = par[u];
+    }
+    return ans;
+}
+
+
+/*
+ * change:
+ * We just need to find its position in segment tree and update it
+ */
+
+void change(int ind, int cost)
+{
+    int u = otherEnd[ind];
+    update_tree(1,0,ptr,posInBase[u],cost);
+}
+
+/*
+* We have a query from u to v, we break it into two queries, u to LCA(u,v) and LCA(u,v) to v
+*/
+
+int query(int u, int v)
+{
+    int lca = lca_query(u,v);
+    int res = 0;
+    res = max(res,query_up(u,lca));
+    res = max(res,query_up(v,lca));
+    return res;
+}
+
+
+int main()
+{
+    //freopen("input.txt","r",stdin);
+    //freopen("output.txt","w",stdout);
+    int t, u, v, w;
+    scanf("%d",&t);
+    while(t--) {
+        scanf("%d",&n);
+        ptr = 0, chainNo = 0;
+        for(int i = 0; i <= n; i++) {
+            adj[i].clear();
+            adjCost[i].clear();
+            indexOfEdge[i].clear();
+            chainHead[i] = -1;
+        }
+        for(int i = 1; i < n; i++) {
+            scanf("%d %d %d",&u, &v, &w);
+            adj[u].push_back(v);
+            adj[v].push_back(u);
+            adjCost[u].push_back(w);
+            adjCost[v].push_back(w);
+            indexOfEdge[u].push_back(i);
+            indexOfEdge[v].push_back(i);
+        }
+
+        level[1] = 0;
+        dfs(1,-1);
+        HLD(1,-1,0);
+        ptr--;
+        lca_init();
+        init_tree(1,0,ptr);
+
+        char s[10];
+
+        while(scanf("%s",s) && s[0] != 'D') {
+            scanf("%d %d",&u, &v);
+            if(s[0] == 'Q') {
+                printf("%d\n",query(u,v));
+            }
+            else {
+                change(u,v);
+            }
+        }
+    }
+}

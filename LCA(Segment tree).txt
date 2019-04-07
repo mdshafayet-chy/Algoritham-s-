@@ -1,0 +1,129 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+#define INF 0x3f3f3f3f
+#define MAX  50005
+
+
+vector<int> adj[MAX];
+int firstOccur[MAX];
+vector<int> dfs_list;
+int level[MAX];
+int tree[4*MAX];
+bool visited[MAX];
+int root;
+
+
+// a preprocessing dfs to find the euler tour list and the height of each vertex
+void dfs(int u)
+{
+    dfs_list.push_back(u);
+    visited[u] = true;
+    int len = adj[u].size();
+    for(int i = 0; i < len; i++) {
+        int v = adj[u][i];
+        if(!visited[v]) {
+            level[v] = level[u]+1;
+            dfs(v);
+            dfs_list.push_back(u);
+        }
+    }
+}
+
+// build segment tree
+void init(int node, int s, int e)
+{
+    if(s == e) {
+        tree[node] = dfs_list[s];
+        return;
+    }
+    int left = node<<1;
+    int right = left+1;
+    int mid = (s+e)>>1;
+    init(left,s,mid);
+    init(right,mid+1,e);
+    if(level[tree[left]] < level[tree[right]]) // storing element with minimum height
+        tree[node] = tree[left];
+    else
+        tree[node] = tree[right];
+}
+
+// queries the segment tree for the element with minimum height between i and j
+int query(int node, int s, int e, int i, int j)
+{
+    if(e < i || s > j)
+        return -1;
+    if(s >= i && e <= j)
+        return tree[node];
+    int left = node<<1;
+    int right = left+1;
+    int mid = (s+e)>>1;
+    int p1 = query(left,s,mid,i,j);
+    int p2 = query(right,mid+1,e,i,j);
+    if(p1 == -1)
+        return p2;
+    if(p2 == -1)
+        return p1;
+    if(level[p1] < level[p2])
+        return p1;
+    else
+        return p2;
+}
+
+// function to be called for lca between a and b
+int lca(int a, int b)
+{
+    int l = firstOccur[a], r = firstOccur[b];
+    if(l > r) {
+        int temp = l;
+        l = r;
+        r = temp;
+    }
+    int sz = dfs_list.size()-1;
+    return query(1,0,sz,l,r);
+}
+
+// the preprocessing function
+void prepare_lca()
+{
+    memset(visited,false,sizeof(visited));
+    dfs_list.clear();
+
+    level[root] = 0;
+    dfs(root);
+
+    int sz = dfs_list.size()-1;
+
+    init(1,0,sz);
+
+    memset(firstOccur,-1,sizeof(firstOccur));
+    for(int i = 0; i <= sz; i++) {
+        int v = dfs_list[i];
+        if(firstOccur[v] == -1)
+            firstOccur[v] = i;
+    }
+}
+
+
+int main()
+{
+    //freopen("input.txt","r",stdin);
+    //freopen("output.txt","w",stdout);
+    int n, m, q, u, v, w;
+    scanf("%d %d",&n, &m);
+    for(int i = 0; i < n; i++)
+        adj[i].clear();
+    for(int i = 0; i < m; i++) {
+        scanf("%d %d",&u, &v);
+        adj[u].push_back(v);
+        adj[v].push_back(u);
+    }
+    root = 1;
+    prepare_lca();
+    scanf("%d",&q);
+    while(q--) {
+        scanf("%d %d",&u, &v);
+        cout << "LCA of "<< u << " & " << v << "  =  " << lca(u,v) << endl;
+    }
+}

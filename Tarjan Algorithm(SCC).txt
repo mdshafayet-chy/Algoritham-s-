@@ -1,0 +1,82 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+
+
+#define INF 0x3f3f3f3f
+#define MAX 2001
+bool onStack[MAX];
+bool visited[MAX];
+vector<int> adj[MAX];
+int d[MAX];
+int low[MAX];
+vector<int> component[MAX];
+stack<int> stk;
+int timer = 0;
+int mark;
+void tarjan(int u)
+{
+	onStack[u] = true;
+	visited[u] = true;
+	stk.push(u);
+	++timer;
+	d[u] = timer, low[u] = timer;
+	int len = adj[u].size();
+	for(int i = 0; i < len; i++) {
+		int v = adj[u][i];
+		if(onStack[v])
+			low[u] = min(low[u],d[v]);
+		else if(!visited[v]){
+			tarjan(v);
+			low[u] = min(low[u],low[v]);
+		}
+	}
+	if(d[u] == low[u]) {
+		mark++;
+		int x = stk.top();
+		while(x != u) {
+			onStack[x] = false;
+			stk.pop();
+			component[mark].push_back(x);
+			//cout << x << " ";
+			x = stk.top();
+
+		}
+		stk.pop();
+		//cout << x << endl;
+		component[mark].push_back(x);
+		onStack[x] = false;
+	}
+}
+
+int main()
+{
+    //freopen("input.txt","r",stdin);
+    //freopen("output.txt","w",stdout);
+    int n, u, v, e;
+    while(scanf("%d %d",&n, &e) && n) {
+		memset(visited,false,sizeof(visited));
+		memset(onStack,false,sizeof(onStack));
+		mark = 0;
+		for(int i = 1; i <= n; i++) {
+			adj[i].clear();
+			component[i].clear();
+		}
+		while(e--) {
+			scanf("%d %d",&u,&v);
+			adj[u].push_back(v);
+		}
+		for(int i = 1; i <= n; i++) {
+			if(!visited[i]) {
+				tarjan(i);
+			}
+		}
+		cout << "Toatal componenet " << mark << endl;
+		for(int i = 1; i <= mark; i++) {
+			cout << "Component " << i << " : ";
+			for(int j = 0; j < component[i].size(); j++)
+				cout << " "  << component[i][j];
+			cout << endl;
+		}
+    }
+}

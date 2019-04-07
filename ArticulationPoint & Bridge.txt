@@ -1,0 +1,80 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+
+
+
+#define INF 0x3f3f3f3f
+#define MAX 100001
+int arr[MAX];
+int d[MAX];
+int low[MAX];
+bool visited[MAX];
+bool articulationPoint[MAX];
+vector<int> adj[MAX];
+vector<pair<int,int> > bridges;
+int timer, root;
+
+void dfs(int u, int par)
+{
+	d[u] = ++timer;
+	low[u] = timer;
+	int noOfChild = 0;
+	int len = adj[u].size();
+	for(int i = 0; i < len; i++) {
+		int v = adj[u][i];
+		if(par == v)
+			continue;
+		if(visited[v]) { // back edge
+			low[u] = min(low[u],d[v]);
+		}
+		else if(!visited[v]) { // tree edge
+			visited[v] = true;
+			dfs(v, u);
+			low[u] = min(low[u],low[v]);
+			if(d[u] <= low[v] && u != root) {
+				articulationPoint[u] = true;
+			}
+			if(d[u] < low[v]) { // don't need to check for the root
+				bridges.push_back(make_pair(u,v));
+			}
+			noOfChild++;
+		}
+	}
+	if(noOfChild > 1 && u == root) {
+		articulationPoint[u] = true;
+	}
+}
+
+
+int main()
+{
+	//freopen("input.txt","r",stdin);
+	//freopen("output.txt","w",stdout);
+	int n, edge;
+	scanf("%d %d",&n, &edge);
+	int x, y;
+	for(int i = 1; i <= n; i++) {
+		adj[i].clear();
+		articulationPoint[i] = false;
+		visited[i] = false;
+	}
+	for(int i = 0; i < edge; i++) {
+		scanf("%d %d",&x, &y);
+		adj[x].push_back(y);
+		adj[y].push_back(x);
+	}
+	root = 1;
+	visited[root] = true;
+	dfs(root,-1);
+	cout << "Articulation points: ";
+	for(int i = 1; i <= n; i++) {
+		if(articulationPoint[i])
+			cout << i << " ";
+	}
+	cout << endl;
+	cout << "Brides: " << endl;
+	for(int i = 0; i < bridges.size(); i++) {
+		cout << bridges[i].first << " ---> " << bridges[i].second << endl;
+	}
+}

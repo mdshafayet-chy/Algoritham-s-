@@ -1,0 +1,90 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+
+#define MAX 1000000
+struct edges{
+	int u, v, w;
+	bool operator < (const edges &p)const {
+		return w < p.w;
+	}
+};
+
+int parent[MAX];
+vector<edges> e; /// or int arr[MAX]
+vector<int> res; // edges of best mst
+int best2 = INT_MAX;
+int Find(int r)
+{
+	if(parent[r] == r)
+		return r;
+	parent[r] = Find(parent[r]);
+	return parent[r];
+}
+
+int mst(int n)
+{
+	for(int i = 0; i < MAX; i++)
+		parent[i] = i;
+	int cnt = 0, s = 0;
+    for (int i = 0; i < (int)e.size(); i++) {
+        int u = Find(e[i].u);
+        int v = Find(e[i].v);
+        if (u != v) {
+	    res.push_back(i);
+            parent[u] = v;
+            cnt++;
+            s += e[i].w;
+            if (cnt == n - 1)
+                break;
+        }
+    }
+    return s;
+}
+
+int secondBestMst(int n)
+{
+	int len = res.size();
+	for(int k = 0; k < len ;k++) {
+		for(int i = 0; i < MAX; i++)
+			parent[i] = i;
+		int cnt = 0, s = 0;
+		bool flag = true;
+		for (int i = 0; i < (int)e.size(); i++) {
+			if(res[k] == i)
+				continue;
+			int u = Find(e[i].u);
+			int v = Find(e[i].v);
+			if (u != v) {
+				parent[u] = v;
+				cnt++;
+				s += e[i].w;
+				if (cnt == n - 1) {
+					if(best2 > s)
+						best2 = s;
+					break;
+				}
+			}
+		}
+	}
+	return best2;
+}
+int main()
+{
+    //freopen("input.txt","r",stdin);
+    //freopen("output.txt","w",stdout);
+	int n, m;
+    cin >> n >> m;
+    for (int i = 1; i <= m; i++) {
+        int u, v, w;
+        cin >> u >> v >> w;
+        edges get;
+        get.u = u;
+        get.v = v;
+        get.w = w;
+        e.push_back(get);
+    }
+    sort(e.begin(),e.end());
+    cout << mst(n) << endl;
+    cout << secondBestMst(n) << endl;
+}

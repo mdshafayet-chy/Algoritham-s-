@@ -1,0 +1,98 @@
+// Codeforces 221D D. Little Elephant and Array
+#include <bits/stdc++.h>
+
+using namespace std;
+
+#define INF 0x3f3f3f3f
+#define MAX  100005
+
+
+int arr[MAX];
+int temp[MAX];
+int ans[MAX];
+int freq[MAX];
+map<int,int> mp;
+int block_size;
+int res;
+
+struct info{
+    int l, r, id;
+}query[MAX];
+
+bool cmp(info A, info B)
+{
+    if(A.l/block_size != B.l/block_size)
+        return A.l/block_size < B.l/block_size;
+    return A.r > B.r;
+}
+
+void rmv(int idx)
+{
+    if(temp[idx] == freq[arr[idx]])
+        res--;
+    freq[arr[idx]]--;
+    if(freq[arr[idx]] == temp[idx])
+        res++;
+}
+void add(int idx)
+{
+    if(temp[idx] == freq[arr[idx]])
+        res--;
+    freq[arr[idx]]++;
+    if(freq[arr[idx]] == temp[idx])
+        res++;
+}
+int main()
+{
+    //freopen("input.txt","r",stdin);
+    //freopen("output.txt","w",stdout);
+    int n, q, x, y;
+    scanf("%d %d",&n, &q);
+    block_size = sqrt(n);
+    for(int i = 0; i < n; i++) {
+        scanf("%d",&arr[i]);
+        temp[i] = arr[i];
+    }
+    sort(temp,temp+n);
+    int asgn = 0;
+    for(int i = 0; i < n; i++) {
+        if(mp.find(temp[i]) == mp.end())
+            mp[temp[i]] = ++asgn;
+    }
+    for(int i = 0; i < n; i++) {
+        temp[i] = arr[i];
+        arr[i] = mp[arr[i]];
+    }
+
+    for(int i = 0; i < q; i++) {
+        scanf("%d %d",&query[i].l, &query[i].r);
+        query[i].l--, query[i].r--;
+        query[i].id = i;
+    }
+
+    sort(query,query+q,cmp);
+    int curL = 0, curR = -1;
+
+    for(int i = 0; i < q; i++) {
+        int l = query[i].l , r  = query[i].r, idx = query[i].id;
+        while(curL < l) {
+            rmv(curL);
+            curL++;
+        }
+        while(curL > l) {
+            curL--;
+            add(curL);
+        }
+        while(curR < r) {
+            curR++;
+            add(curR);
+        }
+        while(curR > r) {
+            rmv(curR);
+            curR--;
+        }
+        ans[idx] = res;
+    }
+    for(int i = 0; i < q; i++)
+        printf("%d\n",ans[i]);
+}

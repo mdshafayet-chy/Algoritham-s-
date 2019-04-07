@@ -1,0 +1,84 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+#define INF 0x3f3f3f3f
+#define MAX 201
+
+
+
+char s1[MAX],s2[MAX];
+int dp[MAX][MAX];
+int len1, len2, lcsLen;
+
+string ans;
+int LCS(int i, int j)
+{
+    if(i == len1 || j == len2)
+        return 0;
+    if(dp[i][j] != -1)
+        return dp[i][j];
+    if(s1[i] == s2[j])
+        dp[i][j] = 1 + LCS(i+1,j+1);
+    else
+        dp[i][j] = max(LCS(i+1,j),LCS(i,j+1));
+    return dp[i][j];
+}
+
+void printLCS(int i, int j)
+{
+    if(i == len1 || j == len2) {
+        printf("%s\n",ans.c_str());
+        return;
+    }
+    //cout << s1[i] << " " << s2[j] << endl;
+    if(s1[i] == s2[j]) {
+        ans += s1[i];
+        printLCS(i+1,j+1);
+    }
+    else {
+        if(dp[i+1][j] > dp[i][j+1])
+            printLCS(i+1,j);
+        else
+            printLCS(i,j+1);
+    }
+}
+void printAllLCS(int i, int j) // takes too much time. gets TLE in lightoj 1110.(no problem for single LCS print(previous function))
+{
+    if(i == len1 || j == len2) {
+        if(lcsLen == ans.length())
+            printf("%s\n\n",ans.c_str()); // can use SET to remove the repetation of same LCS
+        return;
+    }
+    if(s1[i] == s2[j]) {
+        ans += s1[i];
+        printAllLCS(i+1,j+1);
+        ans.erase(ans.end()-1);
+    }
+    else {
+        if(dp[i+1][j] > dp[i][j+1])
+            printAllLCS(i+1,j);
+        else if(dp[i+1][j] < dp[i][j+1])
+            printAllLCS(i,j+1);
+        else {
+            printAllLCS(i+1,j);
+            printAllLCS(i,j+1);
+        }
+    }
+}
+
+
+int main()
+{
+    //freopen("input.txt","r",stdin);
+    //freopen("output.txt","w",stdout);
+    memset(dp,-1,sizeof(dp));
+    scanf("%s %s",s1,s2);
+    len1 = strlen(s1), len2 = strlen(s2);
+    lcsLen = LCS(0,0);
+    printf("LCS length is = %d\n\n",lcsLen);
+    printf("LCS IS:\n");
+    printLCS(0,0);
+    ans.clear();
+    printf("\n\nAll LCS ARE:\n");
+    printAllLCS(0,0);
+}

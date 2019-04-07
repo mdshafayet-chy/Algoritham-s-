@@ -1,0 +1,71 @@
+// Longest common increasing subsequence
+// printing method of geekforgeeks doesn't work.(codechef c5, poj 2127 get WA)
+#include <bits/stdc++.h>
+
+using namespace std;
+
+#define INF 0x3f3f3f3f
+#define MAX 5005
+
+
+int a[MAX];
+int b[MAX];
+int c[MAX];
+int par[MAX][MAX];
+int prevParLen[MAX][MAX];
+int n, m;
+
+void print(int row, int col, int ans)
+{
+    if(col == -1 || ans == 0) {
+        //assert(ans==0);
+        return;
+    }
+    if(a[row] == b[col] && prevParLen[row][col] == ans) {
+        print(row-1,par[row][col],ans-1);
+        printf("%d ",a[row]);
+    }
+    else
+        print(row-1,col,ans);
+}
+void LCIS()
+{
+    memset(c,0,sizeof(c));
+    int row, col, ans = 0;
+    for(int i = 0; i < n; i++) {
+        int cur = 0, last = -1;
+        for(int j = 0; j < m; j++) {
+            if(a[i] == b[j] && cur+1 > c[j]) {
+                c[j] = cur+1;
+                par[i][j] = last;
+                prevParLen[i][j] = c[j];
+            }
+            if(c[j] > ans) {
+                ans = c[j];
+                row = i, col = j;
+            }
+            if(a[i] > b[j] && c[j] > cur) {
+                cur = c[j];
+                last = j;
+            }
+        }
+    }
+    printf("%d\n",ans);
+    if(ans) {
+        print(row-1,par[row][col],ans-1);
+        printf("%d",a[row]);
+    }
+}
+
+int main()
+{
+    //freopen("input.txt","r",stdin);
+    //freopen("output.txt","w",stdout);
+    scanf("%d",&n);
+    for(int i = 0; i < n; i++)
+        scanf("%d",&a[i]);
+    scanf("%d",&m);
+    for(int j = 0; j < m; j++)
+        scanf("%d",&b[j]);
+    LCIS();
+}

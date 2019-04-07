@@ -1,0 +1,95 @@
+// counts the frequency of colour's in a subtree of a node
+#include <bits/stdc++.h>
+
+using namespace std;
+
+#define INF 0x3f3f3f3f
+#define LLINF 0x3f3f3f3f3f3f3f
+#define MAX  100005
+
+vector<int> adj[MAX];
+int sizeOfSubTree[MAX];
+bool big[MAX];
+int col[MAX];
+int freq[MAX];
+long long ans[MAX];
+int mx;
+long long sum;
+
+
+void findSubtreeSize(int u, int par)
+{
+    sizeOfSubTree[u] = 1;
+    int len = adj[u].size();
+    for(int i = 0; i < len; i++) {
+        int v = adj[u][i];
+        if(v != par) {
+            findSubtreeSize(v,u);
+            sizeOfSubTree[u] += sizeOfSubTree[v];
+        }
+    }
+}
+
+void add(int u, int par, int x)
+{
+    freq[col[u]] += x;
+
+    int len = adj[u].size();
+    for(int i = 0; i < len; i++) {
+        int v = adj[u][i];
+        if(v != par && !big[v]) {
+            add(v,u,x);
+        }
+    }
+}
+void dfs(int u, int par, int keep)
+{
+    int len = adj[u].size();
+    int bigChild = -1, sz = 0;
+    for(int i = 0; i < len; i++) {
+        int v = adj[u][i];
+        if(v != par && sizeOfSubTree[v] > sz) {
+            bigChild = v;
+            sz = sizeOfSubTree[v];
+        }
+    }
+    for(int i = 0; i < len; i++) {
+        int v = adj[u][i];
+        if(v != par && v != bigChild) {
+            dfs(v,u,0);
+        }
+    }
+
+    if(bigChild != -1) {
+        dfs(bigChild,u,1);
+        big[bigChild] = true;
+    }
+
+    add(u,par,1);
+    // Here result can be found for the node U
+
+    ans[u] = sum;
+    if(bigChild != -1)
+        big[bigChild] = false;
+    if(keep == 0)
+        add(u,par,-1);
+}
+int main()
+{
+    //freopen("input.txt","r",stdin);
+    //freopen("output.txt","w",stdout);
+    int n, u, v;
+    scanf("%d",&n);
+    for(int i = 1; i <= n; i++)
+        scanf("%d",&col[i]);
+    for(int i = 1; i < n; i++)  {
+        scanf("%d %d",&u,&v);
+        adj[u].push_back(v);
+        adj[v].push_back(u);
+    }
+    findSubtreeSize(1,-1);
+    dfs(1,-1,1);
+
+}
+
+

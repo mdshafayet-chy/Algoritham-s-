@@ -1,0 +1,81 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+
+
+#define INF 0x3f3f3f3f
+#define MAX 10001
+
+vector<int> adj[MAX];
+vector<int> reverseAdj[MAX];
+vector<int> component[MAX];
+stack<int> stk;
+bool visited[MAX];
+int mark;
+
+void dfs(int u)
+{
+	visited[u] = true;
+	int len = adj[u].size();
+	for(int i = 0; i < len; i++) {
+		int v = adj[u][i];
+		if(!visited[v])
+			dfs(v);
+	}
+	stk.push(u);
+}
+
+void findSCC(int u)
+{
+	visited[u] = true;
+	component[mark].push_back(u);
+	int len = reverseAdj[u].size();
+	for(int i = 0; i < len; i++) {
+		int v = reverseAdj[u][i];
+		if(!visited[v])
+			findSCC(v);
+	}
+}
+int main()
+{
+    //freopen("input.txt","r",stdin);
+    //freopen("output.txt","w",stdout);
+    int n, e, a, b;
+    while(scanf("%d %d",&n, &e) != EOF) {
+		for(int i = 1; i <= n; i++) {
+			adj[i].clear();
+			reverseAdj[i].clear();
+			component[i].clear();
+		}
+		memset(visited,false,sizeof(visited));
+		for(int i = 0; i < e; i++) { // directed graph
+			scanf("%d %d",&a, &b);
+			adj[a].push_back(b);
+			reverseAdj[b].push_back(a);
+		}
+		for(int i = 1; i <= n; i++) {
+			if(!visited[i])
+				dfs(i);
+		}
+		memset(visited,false,sizeof(visited));
+		mark = 0;
+		while(!stk.empty()) {
+			a = stk.top();
+			stk.pop();
+			if(!visited[a]) {
+				findSCC(a);
+				mark++;
+			}
+		}
+		printf("The graph has total %d components\n",mark);
+		for(int i = 0; i < mark; i++) {
+			printf("Component %d is:",i+1);
+			for(int j = 0; j < component[i].size(); j++)
+				printf(" %d",component[i][j]);
+			printf("\n");
+		}
+    }
+
+}
+
+

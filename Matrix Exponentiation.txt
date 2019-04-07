@@ -1,0 +1,112 @@
+// UVA 10689
+// Details in progkriya 
+#include <bits/stdc++.h>
+using namespace std;
+
+#define INF 0x3f3f3f3f
+#define LLINF 0x3f3f3f3f3f3f3f
+#define MAX  100005
+int mod;
+
+struct matrix {
+
+    int arr[11][11];
+    int row,col;
+};
+
+// multiplies two matrices and returns the result
+matrix multiply(matrix &a, matrix &b) 
+{
+    // column of a must be equal to the row of b
+    assert(a.col == b.row);
+    matrix res;
+    res.row = a.row;
+    res.col = b.col;
+    for(int i = 0; i < res.row; i++) {
+        for(int j = 0; j < res.col; j++) {
+            int sum = 0;
+            for(int k = 0; k < a.col; k++) {
+                sum += a.arr[i][k] * b.arr[k][j];
+                sum %= mod;
+            }
+            res.arr[i][j] = sum;
+        }
+    }
+    return res;
+}
+
+// returns mat^p
+matrix power(matrix mat, int p)
+{
+    assert(p >= 1);
+    if(p == 1)
+        return mat;
+    if(p%2 == 1)
+        return multiply(mat,power(mat,p-1));
+    matrix ret = power(mat,p/2);
+    ret =  multiply(ret,ret);
+    return ret;
+}
+
+/*
+In case of stack overflow can use this power function for optimization
+
+string binary(int p) {
+  string ret = "";
+  while (p > 0) {
+    ret += (p % 2 == 0) ? "0" : "1";
+    p /= 2;
+  }
+  reverse(ret.begin(), ret.end());
+  return ret;
+}
+
+matrix power(matrix mat, int p) {
+  string bin = binary(p);
+  matrix ret = mat;
+  for (int i = 1; i < bin.size(); i++) {
+    ret = multiply(ret, ret);
+    if (bin[i] == '1') {
+      ret = multiply(ret, mat);
+    }
+  }
+  return ret;
+}
+
+*/
+
+int main()
+{
+    //freopen("input.txt","r",stdin);
+    //freopen("output.txt","w",stdout);
+    int a, b, t, n, m;
+    scanf("%d",&t);
+    while(t--) {
+        scanf("%d %d %d %d",&a,&b,&n,&m);
+        mod = 1;
+        for(int i = 0; i < m; i++)
+            mod *= 10;
+        matrix mat;
+        mat.row = 2, mat.col = 2;
+        mat.arr[0][0] = 1, mat.arr[0][1] = 1;
+        mat.arr[1][0] = 1, mat.arr[1][1] = 0;
+
+        if(n <= 2) {
+            if(n == 0)
+                printf("%d\n",a);
+            else if(n == 1)
+                printf("%d\n",b);
+            else
+                printf("%d\n",a+b);
+        }
+        else {
+            mat = power(mat,n-1);
+            int ans = mat.arr[0][0]*b + mat.arr[0][1]*a;
+            ans %= mod;
+            printf("%d\n",ans);
+        }
+    }
+}
+
+
+

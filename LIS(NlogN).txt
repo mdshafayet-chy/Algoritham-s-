@@ -1,0 +1,50 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+#define INF 0x3f3f3f3f
+#define MAX 105
+
+
+int arr[MAX];
+int sequence[MAX];
+
+void findLIS(int n)
+{
+    int top, index;
+    vector<int> v;
+    vector<int>::iterator iv;
+    for(int i = 0; i < n; i++) {
+        iv = lower_bound(v.begin(),v.end(),arr[i]);
+        index = iv - v.begin();
+        if(iv == v.end()) {
+            v.push_back(arr[i]);
+            top = i;
+        }
+        else
+            v[index] = arr[i];
+        sequence[i] = index;
+    }
+    printf("Length of LIS = %d\n",v.size());
+    vector<int> res;
+    res.push_back(arr[top]);
+    for(int i = top-1; i >= 0; i--) {
+        if(arr[i] < arr[top] && sequence[i] == sequence[top]-1) {
+            top = i;
+            res.push_back(arr[i]);
+        }
+    }
+    printf("Sequence is: ");
+    for(int i = res.size()-1; i >= 0; i--)
+        printf(" %d",res[i]);
+    printf("\n");
+}
+int main()
+{
+    //freopen("input.txt","r",stdin);
+    //freopen("output.txt","w",stdout);
+    int n;
+    scanf("%d",&n);
+    for(int i = 0; i < n; i++)
+        scanf("%d",&arr[i]);
+    findLIS(n);
+}

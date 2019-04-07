@@ -1,0 +1,39 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+#define INF 0x3f3f3f3f
+#define MAX 105
+
+
+char s1[MAX], s2[MAX];
+int dp[MAX][MAX];
+int n, m;
+
+void LCS()
+{
+    n = strlen(s1);
+    m = strlen(s2);
+    for(int i = 1; i <= n; i++) {
+        for(int j = 1; j <= m; j++) {
+            if(s1[i-1] == s2[j-1])
+                dp[i][j] = dp[i-1][j-1]+1;
+            else
+                dp[i][j] = max(dp[i-1][j],dp[i][j-1]);
+        }
+    }
+}
+int main()
+{
+    //freopen("input.txt","r",stdin);
+    //freopen("output.txt","w",stdout);
+    int t;
+    scanf("%d",&t);
+    getchar();
+    for(int cs = 1; cs <= t; cs++) {
+        gets(s1);
+        gets(s2);
+        memset(dp,0,sizeof(dp));
+        LCS();
+        printf("LCS Length is : %d\n",dp[n][m]);
+    }
+}

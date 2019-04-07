@@ -1,0 +1,96 @@
+// Complexity O(V^2 * E)
+// geekforgeeks
+// Better than Endmond's Carp[ O(V*E^2) ]
+#include <bits/stdc++.h>
+using namespace std;
+
+#define INF 0x3f3f3f3f
+#define MAX 105
+
+
+vector<int> adj[MAX];
+int level[MAX];
+int residualCapacity[MAX][MAX];
+int source, sink;
+
+void addEdge(int u, int v, int w)
+{
+    adj[u].push_back(v);
+    adj[v].push_back(u);
+    residualCapacity[u][v] = w;
+    residualCapacity[v][u] = 0; // For directed Graph
+}
+
+bool bfs()
+{
+    memset(level,-1,sizeof(level));
+    queue<int> Q;
+    Q.push(source);
+    level[source] = 0;
+    while(!Q.empty()) {
+        int u = Q.front();
+        Q.pop();
+        int len = adj[u].size();
+        for(int i = 0; i < len; i++) {
+            int v = adj[u][i];
+            if(level[v] < 0 && residualCapacity[u][v] > 0) {
+                level[v] = level[u]+1;
+                Q.push(v);
+            }
+        }
+    }
+    if(level[sink] < 0)
+        return false;
+    return true;
+}
+
+int sendFlow(int u, int flow)
+{
+    if(u == sink)
+        return flow;
+    int len = adj[u].size();
+    for(int i = 0; i < len; i++) {
+        int v = adj[u][i];
+        if(level[u]+1 == level[v] && residualCapacity[u][v] > 0) {
+            int cur_flow = min(flow,residualCapacity[u][v]);
+            int temp_flow = sendFlow(v,cur_flow);
+            if(temp_flow > 0) {
+                residualCapacity[u][v] -= temp_flow;
+                residualCapacity[v][u] += temp_flow;
+                return temp_flow;
+            }
+        }
+    }
+    return 0;
+}
+int dinicMaxFlow()
+{
+    int totalFlow = 0;
+    while(bfs()) {
+        while(1) {
+            int curFlow = sendFlow(source, INF);
+            if(curFlow == 0)
+               break;
+            totalFlow += curFlow;
+        }
+    }
+    return totalFlow;
+}
+int main()
+{
+    //freopen("input.txt","r",stdin);
+    //freopen("output.txt","w",stdout);
+    int t, n, e, u, v, w;
+    scanf("%d",&t);
+    for(int cs = 1; cs <= t; cs++) {
+        scanf("%d %d %d %d",&n, &source, &sink, &e);
+        for(int i = 0; i <= n; i++)
+            adj[i].clear();
+        memset(residualCapacity,0,sizeof(residualCapacity));
+        for(int i = 0; i < e; i++) {
+            scanf("%d %d %d",&u, &v, &w);
+            addEdge(u,v,w);
+        }
+        printf("Case %d: %d\n",cs,dinicMaxFlow());
+    }
+}

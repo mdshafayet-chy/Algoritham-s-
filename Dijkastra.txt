@@ -1,0 +1,61 @@
+// THIS CODE DETERMINE SHORTEST PATH BETWEEN 1 TO N.. ALL EDGES ARE BIDIRECTIONAL... (Codeforces problem - C. Dijkstra?) 
+#include <bits/stdc++.h>
+using namespace std;
+
+#define pii pair<int,int>
+
+#define MAX 100001
+long long dist[MAX];
+int parent[MAX];
+int visited[MAX]; // Not to visit adjacent nodes of Node twice
+vector<pii> adj[MAX];
+int main()
+{
+    //freopen("input.txt","r",stdin);
+    //freopen("output.txt","w",stdout);
+	priority_queue< pair<int,int>,vector<pair<int,int> >, greater<pair<int,int> > > pq;
+	int n, m, a, b, c;
+	scanf("%d %d",&n, &m);
+	for(int i = 1; i <= n; i++)
+		dist[i] = LONG_LONG_MAX;
+	while(m--) {
+		scanf("%d %d %d",&a, &b, &c);
+		adj[a].push_back(make_pair(c,b));
+		adj[b].push_back(make_pair(c,a));
+	}
+	pq.push(make_pair(0,1)); //need to insert in (distance, node) order
+	while(!pq.empty()) {
+		pii temp = pq.top();
+		int u = temp.second;
+		pq.pop();
+		if(visited[u])
+			continue;
+		int len = adj[u].size();
+		for(int i = 0; i < len; i++) {
+			temp = adj[u][i];
+			int v = temp.second;
+			if(temp.first+dist[u] < dist[v]) {
+				dist[v] = temp.first+dist[u];
+				pq.push(make_pair(dist[v],v)); //need to insert in (distance, node) order
+				parent[v] = u;
+			}
+		}
+		visited[u] = 1; 
+	}
+	if(parent[n] == 0) { // IF THERE IS NO PATH BETWEEN 1 TO N
+		printf("-1");
+		return 0;
+	}
+	vector<int> res;
+	while(parent[n] != 1) {
+		res.push_back(n);
+		n = parent[n];
+	}
+	res.push_back(n);
+	res.push_back(1);
+	int len = res.size();
+	for(int i = len-1; i >= 0; i--)
+		printf("%d ",res[i]);
+
+
+}

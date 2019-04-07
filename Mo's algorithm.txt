@@ -1,0 +1,69 @@
+// Mo's Algorithm
+// determine sum of given range
+#include <bits/stdc++.h>
+
+using namespace std;
+
+#define INF 0x3f3f3f3f
+#define MAX  100005
+
+
+int arr[MAX];
+int ans[MAX];
+
+int block_size;
+
+
+struct info{
+    int l, r, id;
+}query[MAX];
+
+bool cmp(info A, info B)
+{
+    if(A.l/block_size != B.l/block_size)
+        return A.l/block_size < B.l/block_size;
+    return A.r > B.r;
+}
+
+int main()
+{
+    //freopen("input.txt","r",stdin);
+    //freopen("output.txt","w",stdout);
+    int n, q;
+    scanf("%d",&n);
+    block_size = sqrt(n);
+    for(int i = 0; i < n; i++)
+        scanf("%d",&arr[i]);
+    scanf("%d",&q);
+    for(int i = 0; i < q; i++) {
+        scanf("%d %d",&query[i].l, &query[i].r);// 0 based indexing
+        query[i].id = i;
+    }
+
+    sort(query,query+q,cmp);
+    int curL = 0, curR = -1, curSum = 0; // 0 based indexing
+
+    for(int i = 0; i < q; i++) {
+        int l = query[i].l , r  = query[i].r, idx = query[i].id;
+        while(curL < l) {
+            curSum -= arr[curL];
+            curL++;
+        }
+        while(curL > l) {
+            curL--;
+            curSum += arr[curL];
+        }
+        while(curR < r) {
+            curR++;
+            curSum+= arr[curR];
+        }
+        while(curR > r) {
+            curSum -= arr[curR];
+            curR--;
+        }
+        ans[idx] = curSum;
+    }
+    for(int i = 0; i < q; i++)
+        cout << ans[i] << endl;
+
+}

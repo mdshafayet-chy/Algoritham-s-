@@ -1,0 +1,84 @@
+// counts the number of element less than K in a Range
+#include <bits/stdc++.h>
+
+using namespace std;
+
+#define INF 0x3f3f3f3f
+#define MAX  100005
+
+int arr[MAX];
+
+struct node {
+    node *left, *right;
+    int val;
+    node(int a = 0, node *b = NULL, node *c = NULL) {
+        val = a;
+        left = b;
+        right = c;
+    }
+
+    void build(int l, int r)
+    {
+        if(l == r)
+            return;
+        left = new node();
+        right = new node();
+        int mid = (l+r)>>1;
+        left->build(l,mid);
+        right->build(mid+1,r);
+    }
+
+    node *update(int l, int r, int idx)
+    {
+        if(r < idx || l > idx)
+            return this;
+        if(l == r && l == idx) {
+            node *ret = new node(val,left,right);
+            ret->val++;
+            return ret;
+        }
+        int mid = (l+r)>>1;
+        node *ret = new node();
+        ret->left = left->update(l,mid,idx);
+        ret->right = right->update(mid+1,r,idx);
+        ret->val = ret->left->val + ret->right->val;
+        return ret;
+    }
+
+    int query(int l, int r, int i, int j)
+    {
+        if(r < i || l > j)
+            return 0;
+        if(l >= i && r <= j)
+            return val;
+        int mid = (l+r)>>1;
+        int p = left->query(l,mid,i,j);
+        int q = right->query(mid+1,r,i,j);
+        return p+q;
+    }
+
+
+}*root[MAX];
+
+
+int main()
+{
+    //freopen("input.txt","r",stdin);
+    //freopen("output.txt","w",stdout);
+    int n, q, l, r, k;
+    scanf("%d",&n);
+    root[0] = new node();
+    root[0]->build(1,MAX);
+    for(int i = 1; i <= n; i++) {
+        scanf("%d",&arr[i]);
+        root[i] = root[i-1]->update(1,MAX,arr[i]);
+    }
+    scanf("%d",&q);
+    
+    while(q--) {
+        scanf("%d %d %d",&l, &r, &k);
+        int res = root[r]->query(1,MAX,1,k-1) - root[l-1]->query(1,MAX,1,k-1);
+        printf("total number less than %d between %d to %d : %d\n",k,l,r,res);
+    }
+
+}

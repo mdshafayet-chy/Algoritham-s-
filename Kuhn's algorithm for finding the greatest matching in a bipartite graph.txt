@@ -1,0 +1,47 @@
+// Details in Shakil's Blog & ruMaxAlgo
+
+// http://shakilcompetitiveprogramming.blogspot.nl/2013/12/maximum-bipartite-matching-by-kuhns.html
+#include <bits/stdc++.h>
+using namespace std;
+
+#define INF 0x3f3f3f3f
+#define MAX 305
+
+vector<int> adj[MAX];
+int Right[MAX];
+int Left[MAX];
+bool visited[MAX];
+
+
+bool dfs(int u)
+{
+    int len = adj[u].size();
+    for(int i = 0; i < len; i++) {
+        int v = adj[u][i];
+        if(visited[v])
+            continue;
+        visited[v] = true;
+        if(Right[v] == -1 || dfs(Right[v])) {
+            Right[v] = u;
+            Left[u] = v;
+            return true;
+        }
+    }
+    return false;
+}
+int main()
+{
+	freopen("input.txt","r",stdin);
+	//freopen("output.txt","w",stdout);
+	//First Build the Graph Then
+	memset(Right,-1,sizeof(Right));
+	memset(Left,-1,sizeof(Left));
+    int totalFlow = 0;
+    for(int i = 0; i < TotalNodeOfFirstSet;i++) { 
+        memset(visited,false,sizeof(visited));
+        if(dfs(i)) {
+            totalFlow++;
+        }
+    }
+    printf("%d\n",totalFlow);
+}

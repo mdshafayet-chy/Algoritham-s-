@@ -1,0 +1,45 @@
+// solution of spoj PTO7X
+#include <bits/stdc++.h>
+using namespace std;
+
+#define INF 0x3f3f3f3f
+#define MAX 100001
+vector<int> adj[MAX];
+int dp[MAX][2];
+
+
+int minimumVertexCover(int u, int par, int isGaurd)
+{
+    int len = adj[u].size();
+    if(len == 0)
+        return 0;
+    if(dp[u][isGaurd] != -1)
+        return dp[u][isGaurd];
+    int ret = 0;
+    for(int i = 0; i < len; i++) {
+        int v = adj[u][i];
+        if(v == par)
+            continue;
+        if(isGaurd)
+            ret += min(minimumVertexCover(v,u,0),minimumVertexCover(v,u,1));
+        else
+            ret += minimumVertexCover(v,u,1);
+    }
+    dp[u][isGaurd] = ret+isGaurd;
+    return dp[u][isGaurd];
+}
+int main()
+{
+	//freopen("input.txt","r",stdin);
+	//freopen("output.txt","w",stdout);
+	memset(dp,-1,sizeof(dp));
+	int n, u, v;
+	scanf("%d",&n);
+	for(int i = 1; i < n; i++) {
+        scanf("%d %d",&u, &v);
+        adj[u].push_back(v);
+        adj[v].push_back(u);
+	}
+	int res = min(minimumVertexCover(1,-1,0),minimumVertexCover(1,-1,1));
+	printf("%d\n",res);
+}

@@ -1,0 +1,88 @@
+// Complexity O(V*E^2)
+#include <bits/stdc++.h>
+using namespace std;
+
+#define INF 0x3f3f3f3f
+#define MAX 101
+vector<int> adj[MAX];
+int par[MAX];
+bool visited[MAX];
+int capacity[MAX][MAX];
+int residualCapacity[MAX][MAX];
+int s, des;
+
+
+bool bfs()
+{
+	queue<int> Q;
+	Q.push(s);
+	memset(visited,false,sizeof(visited));
+	visited[s] = true;
+	while(!Q.empty()) {
+		int u = Q.front();
+		Q.pop();
+		if(u == des)
+			return true;
+		int len = adj[u].size();
+		for(int i = 0; i < len; i++) {
+			int v = adj[u][i];
+			if(!visited[v] && residualCapacity[u][v] > 0) {
+				visited[v] = true;
+				par[v] = u;
+				Q.push(v);
+			}
+		}
+	}
+	return false;
+}
+void clr(int n)
+{
+	for(int i = 0; i <= n; i++) {
+		adj[i].clear();
+		for(int j = 0; j <= n; j++) {
+			capacity[i][j] = 0;
+			capacity[j][i] = 0;
+			residualCapacity[i][j] = 0;
+			residualCapacity[j][i] = 0;
+		}
+	}
+}
+int main()
+{
+	freopen("input.txt","r",stdin);
+	//freopen("output.txt","w",stdout);
+	int tt, n, e, u, v, w, totalFlow;
+	scanf("%d",&tt);
+	for(int cs = 1; cs <= tt; cs++) {
+		scanf("%d",&n);
+		totalFlow = 0;
+		clr(n);
+		scanf("%d %d %d",&s, &des, &e);
+		while(e--) {
+			scanf("%d %d %d",&u, &v, &w);
+			adj[u].push_back(v);
+			adj[v].push_back(u);
+			capacity[u][v] = w;
+			residualCapacity[u][v] = w;
+			residualCapacity[v][u] = 0; // For directed graph
+		}
+		while(bfs()) {
+			int curFlow = INT_MAX;
+			v = des;
+			while(v != s) {
+				u = par[v];
+				curFlow = min(curFlow,residualCapacity[u][v]);
+				v = u;
+			}
+			v = des;
+			while(v != s) {
+				u = par[v];
+				residualCapacity[u][v] -= curFlow;
+				residualCapacity[v][u] += curFlow;
+				v = u;
+			}
+			totalFlow += curFlow;
+		}
+		printf("Case %d: %d\n",cs,totalFlow);
+	}
+}

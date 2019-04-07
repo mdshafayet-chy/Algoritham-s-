@@ -1,0 +1,51 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+
+
+#define INF 0x3f3f3f3f
+int value[100];
+int dp[100];
+int dir[100];
+int n;
+
+int longest(int u)
+{
+	if(dp[u] != -1) {
+		return dp[u];
+	}
+	int maxi = 0;
+	for(int i = u+1; i <= n; i++) {
+		if(value[i] > value[u]) { // value[i] >= value[u] for non decreasing
+			if(longest(i) > maxi) {
+				maxi = longest(i);
+				dir[u] = i;
+			}
+		}
+	}
+	dp[u] = maxi+1;
+	return dp[u];
+}
+int main()
+{
+    //freopen("input.txt","r",stdin);
+    //freopen("output.txt","w",stdout);
+    int ans = 0, start = 0;
+    scanf("%d",&n);
+    for(int i = 1; i <= n; i++)
+		scanf("%d",&value[i]);
+	memset(dp,-1,sizeof(dp));
+	memset(dir,-1,sizeof(dir));
+	for(int i = 1; i <= n; i++) {
+		cout << "Longest increasing subsequence from " << i << " = " << longest(i) << endl;
+		if(longest(i) > ans)
+			ans = longest(i), start = i;
+	}
+	cout << ans << endl;
+	cout << value[start];
+	while(start != -1) {
+		start = dir[start];
+		if(start != -1)
+			cout << " -> " << value[start];
+	}
+}

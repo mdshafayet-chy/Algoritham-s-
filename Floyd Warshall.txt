@@ -1,0 +1,65 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+
+
+
+#define INF 0x3f3f3f3f
+#define MAX 100
+int cost[MAX][MAX];
+int next[MAX][MAX];
+
+int main()
+{
+	//freopen("input.txt","r",stdin);
+	//freopen("output.txt","w",stdout);
+	int edge, a, b, c, p;
+	scanf("%d",&edge);
+	for(int i = 1; i < MAX; i++) {
+		for(int j = 1; j < MAX; j++) {
+			if(i == j)
+				cost[i][j] = 0;
+			else
+				cost[i][j] = INF;
+			next[i][j] = j;
+		}
+	}
+	for(int i = 0; i < edge; i++) {
+		scanf("%d %d %d",&a, &b, &c);
+		cost[a][b] = c;
+	}
+	for(int k = 1; k < MAX; k++) {
+		for(int i = 1; i < MAX; i++) {
+			for(int j = 1; j < MAX; j++) {
+				if(cost[i][j] > cost[i][k]+cost[k][j]) { // if(cost[i][k] < INF && cost[k][j] < INF) -> for negative edge
+					cost[i][j] = cost[i][k]+cost[k][j];
+					next[i][j] = next[i][k];
+				}
+			}
+		}
+	}
+	scanf("%d",&p);
+	while(p--) { // printing path
+		int i, j;
+		scanf("%d %d",&i, &j);
+		cout << i;
+		while(i != j) {
+			i = next[i][j];
+			cout << " -> " << i;
+		}
+		cout << endl;
+	}
+}
+
+
+------------------------------------------------------------------------------------------------------
+
+For negative cycle:
+-------------------
+After applying above floyd warshall algo, then
+
+for ( int i = 0 ; i < n ; ++ i )
+    for ( int j = 0 ; j < n ; ++ j )
+        for ( int t = 0 ; t < n ; ++ t )
+            if ( d [ i ] [ t ] < INF && d [ t ] [ t ] < 0 && d [ t ] [ j ] < INF )
+                d [ i ] [ j ] = - INF ; 
